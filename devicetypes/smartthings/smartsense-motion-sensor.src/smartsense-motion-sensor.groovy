@@ -41,8 +41,8 @@ metadata {
 		fingerprint inClusters: "0000,0001,0003,0020,0402,0500", outClusters: "0019", manufacturer: "Samjin", model: "motion", deviceJoinName: "Motion Sensor" // This is the only ST sensor that shouldn't use SmartThings-smartthings-SmartSense_Motion_Sensor
 		fingerprint inClusters: "0000,0001,0003,0020,0402,0500,0B05", outClusters: "0019", manufacturer: "Ecolink", model: "PIRZB1-ECO", deviceJoinName: "Ecolink Motion Sensor" //Ecolink Motion Detector
         //AduroSmart
-        fingerprint profileId: "0104", deviceId: "0402", inClusters: "0000,0003,0500,0001,FFFF", manufacturer: "ADUROLIGHT", model: "VMS_ADUROLIGHT", deviceJoinName: "ERIA Motion Sensor Sensor", mnmn: "SmartThings", vid: "generic-contact-3" //ERIA Motion Sensor V2.0
-        fingerprint profileId: "0104", deviceId: "0402", inClusters: "0000,0003,0500,0001,FFFF", manufacturer: "AduroSmart Eria", model: "VMS_ADUROLIGHT", deviceJoinName: "ERIA Motion Sensor Sensor", mnmn: "SmartThings", vid: "generic-contact-3" //ERIA Motion Sensor V2.1
+        fingerprint profileId: "0104", deviceId: "0402", inClusters: "0000,0003,0500,0001,FFFF", manufacturer: "ADUROLIGHT", model: "VMS_ADUROLIGHT", deviceJoinName: "ERIA Motion Sensor", mnmn: "SmartThings", vid: "generic-motion-2" //ERIA Motion Sensor V2.0
+        fingerprint profileId: "0104", deviceId: "0402", inClusters: "0000,0003,0500,0001,FFFF", manufacturer: "AduroSmart Eria", model: "VMS_ADUROLIGHT", deviceJoinName: "ERIA Motion Sensor", mnmn: "SmartThings", vid: "generic-motion-2" //ERIA Motion Sensor V2.1
 	}
 
 	simulator {
@@ -59,7 +59,7 @@ metadata {
 			])
 		}
 		section {
-			input "tempOffset", "number", title: "Temperature offset", description: "Select how many degrees to adjust the temperature.", range: "*..*", displayDuringSetup: false
+			input "tempOffset", "number", title: "Temperature offset", description: "Select how many degrees to adjust the temperature.", range: "-100..100", displayDuringSetup: false
 		}
 	}
 
@@ -153,7 +153,7 @@ def parse(String description) {
 		}
 	} else if (map.name == "temperature") {
 		if (tempOffset) {
-			map.value = (int) map.value + (int) tempOffset
+			map.value = new BigDecimal((map.value as float) + (tempOffset as float)).setScale(1, BigDecimal.ROUND_HALF_UP)
 		}
 		map.descriptionText = temperatureScale == 'C' ? '{{ device.displayName }} was {{ value }}°C' : '{{ device.displayName }} was {{ value }}°F'
 		map.translatable = true
